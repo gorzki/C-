@@ -1,0 +1,6 @@
+#include <stdio.h>
+int main(){
+	/* kappa :D */
+  printf("Helloworld");
+  return 0;
+}
