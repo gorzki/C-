@@ -17,7 +17,8 @@ char * my_own_strcat(char firstword[], char secondword[]){
 }
 
 int main(){
-	char *joinWord = my_own_strcat("Zero", "XaXaXaXaC");
+xx
+	char *joinWord = my_own_strcat("Zero", "Death!");
 	puts(joinWord);
 	free(joinWord);
 	return 0;
