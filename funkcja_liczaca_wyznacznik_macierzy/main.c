@@ -1,15 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-int matrix_alloc(int n){
-	int **matrix = (int **)malloc(n * sizeof(int*));
-	for(int i = 0; i < n; i++){
-		matrix[i] = (int *)malloc(n * sizeof(int));
+double ** matrix_alloc(int n){
+	int i;
+	double **matrix = (double **)malloc(n * sizeof(double*));
+	for(i = 0; i < n; i++){
+		matrix[i] = (double *)malloc(n * sizeof(double));
 	}
+	return matrix;
 }
-int matrix_free(double ** minor){
-	while(*minor++){
-		free(minor);	
+void matrix_free(double ** minor){
+	int i;
+	for (i=0; i<sqrt(sizeof(minor)/8); i++){
+		free(minor[i]);
 	}
 	free(minor);
 }
@@ -29,24 +33,52 @@ double det(double ** matrix, int n)
 		return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
 	}
 
-	minor=matrix_alloc(n-1);
+	minor = matrix_alloc(n-1);
 
 	for(i=0;i<n;i++)
 	{
-		/* skopiuj odp. podmacierz do minor */
-		...
-
-		/* wylicz wyznacznik podmiacierzy */
-		sum+=sign*matrix[0][i]*det(minor,n-1);
-		sign = -sign;
-	};
+		if (matrix[0][i] == 0){
+			sum+=0;
+		}
+		else{
+			sum+=sign*matrix[0][i]*det(minor,n-1);
+			sign = -sign;
+		}
+	}
 
 	matrix_free(minor);
 
 	return sum;
-}	
+}
 
 int main(){
-	
+	double** minor;
+	FILE * pFile;
+	int size = 0, i,j;
+  pFile = fopen ("matrix.dat","r");
+  if (pFile!=NULL)
+  {
+		fscanf(pFile, "%d", &size);
+		printf("Wielkosc -> %d\n", size);
+		minor = matrix_alloc(size);
+		for(i=0;i<size;i++){
+			for(j=0;j<size;j++){
+				fscanf(pFile, "%lf", &minor[i][j]);
+			}
+		}
+		for(i=0;i<size;i++){
+			for(j=0;j<size;j++){
+				printf("%.2f ", minor[i][j]);
+			}
+			printf("\n");
+		}
+		printf("%.2f",det(minor, size));
+		matrix_free(minor);
+    fclose (pFile);
+  }
+	else{
+		printf("Nie mozna otworzyc pliku");
+	}
+
 	return 0;
 }
