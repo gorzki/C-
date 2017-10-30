@@ -1,18 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 double ** matrix_alloc(int n){
 	int i;
 	double **matrix = (double **)malloc(n * sizeof(double*));
+	if(matrix==NULL){
+		free(matrix);
+		printf("Error");
+		return 0;
+	}
 	for(i = 0; i < n; i++){
 		matrix[i] = (double *)malloc(n * sizeof(double));
+		if(matrix[i]==NULL){
+			free(matrix[i]);
+			printf("Error");
+			return 0;
+		}
 	}
 	return matrix;
 }
-void matrix_free(double ** minor){
+void matrix_free(double** minor, int n){
 	int i;
-	for (i=0; i<sqrt(sizeof(minor)/8); i++){
+	for (i=0; i<n; i++){
 		free(minor[i]);
 	}
 	free(minor);
@@ -20,12 +29,11 @@ void matrix_free(double ** minor){
 
 double det(double ** matrix, int n)
 {
-	double** minor;
+	double ** minor;
 	double sum=0.0;
 	double sign=1.0;
-	int i;
+	int i,j,k;
 
-	/* rozpatrz przypadki szczególne */
 	if(n==1){
 		return matrix[0][0];
 	}
@@ -35,50 +43,45 @@ double det(double ** matrix, int n)
 
 	minor = matrix_alloc(n-1);
 
-	for(i=0;i<n;i++)
-	{
-		if (matrix[0][i] == 0){
-			sum+=0;
+	for(i=0;i<n;i++){
+		for(j=0; j<n-1; j++){
+			for(k=0; k<n-1;k++){
+				if(i>k){
+					minor[j][k]=matrix[j+1][k];
+				}else{
+					minor[j][k]=matrix[j+1][k+1];
+				}
+			}
 		}
-		else{
-			sum+=sign*matrix[0][i]*det(minor,n-1);
-			sign = -sign;
-		}
+		sum+=sign*matrix[0][i]*det(minor,n-1);
+		sign=-sign;
 	}
-
-	matrix_free(minor);
-
+	matrix_free(minor, n-1);
 	return sum;
 }
 
 int main(){
-	double** minor;
+	double ** minor;
 	FILE * pFile;
-	int size = 0, i,j;
-  pFile = fopen ("matrix.dat","r");
-  if (pFile!=NULL)
-  {
-		fscanf(pFile, "%d", &size);
-		printf("Wielkosc -> %d\n", size);
-		minor = matrix_alloc(size);
-		for(i=0;i<size;i++){
-			for(j=0;j<size;j++){
+	int n = 0, i,j;
+	pFile = fopen ("matrix.txt","rt");
+	if (pFile!=NULL)
+	{
+		fscanf(pFile, "%d", &n);
+		minor = matrix_alloc(n);
+		for(i=0;i<n;i++){
+			for(j=0;j<n;j++){
 				fscanf(pFile, "%lf", &minor[i][j]);
 			}
 		}
-		for(i=0;i<size;i++){
-			for(j=0;j<size;j++){
-				printf("%.2f ", minor[i][j]);
-			}
-			printf("\n");
-		}
-		printf("%.2f",det(minor, size));
-		matrix_free(minor);
-    fclose (pFile);
-  }
-	else{
-		printf("Nie mozna otworzyc pliku");
 	}
-
+	else{
+		fclose (pFile);
+		printf("Nie mozna otworzyc pliku");
+		return 0;
+	}
+	fclose (pFile);
+	printf("%f", det(minor, n));
+	matrix_free(minor, n);
 	return 0;
 }
