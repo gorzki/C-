@@ -74,14 +74,13 @@ int main(){
 				fscanf(pFile, "%lf", &minor[i][j]);
 			}
 		}
+	fclose (pFile);
+	printf("%lf", det(minor, n));
+	matrix_free(minor, n);
 	}
 	else{
 		fclose (pFile);
 		printf("Nie mozna otworzyc pliku");
-		return 0;
 	}
-	fclose (pFile);
-	printf("%f", det(minor, n));
-	matrix_free(minor, n);
 	return 0;
 }
