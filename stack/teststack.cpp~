@@ -12,5 +12,7 @@ int main()
 	s2.push(6);
 	printf("%d %d\n",s1.pop(),s2.pop());
 	printf("%d\n",s1.pop());
+	s1.free();
+	s2.free();
 	return 0;
 }

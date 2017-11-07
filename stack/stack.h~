@@ -5,6 +5,7 @@ public:
 	void push(int a);
 	int pop();
 	void clear();
+	int realloc();
 	stack();
 	~stack();
 private:

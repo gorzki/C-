@@ -2,19 +2,21 @@
 #include <stdlib.h>
 
 double ** matrix_alloc(int n){
-	int i;
+	int i,j;
 	double **matrix = (double **)malloc(n * sizeof(double*));
 	if(matrix==NULL){
-		free(matrix);
 		printf("Error");
 		return 0;
 	}
 	for(i = 0; i < n; i++){
 		matrix[i] = (double *)malloc(n * sizeof(double));
 		if(matrix[i]==NULL){
-			free(matrix[i]);
-			printf("Error");
-			return 0;
+			for(j=0;j<i; j++){
+				free(matrix[j]);
+				
+			}
+		free(matrix);
+		return 0;
 		}
 	}
 	return matrix;
@@ -75,7 +77,7 @@ int main(){
 			}
 		}
 	fclose (pFile);
-	printf("%lf", det(minor, n));
+	printf("%f", det(minor, n));
 	matrix_free(minor, n);
 	}
 	else{

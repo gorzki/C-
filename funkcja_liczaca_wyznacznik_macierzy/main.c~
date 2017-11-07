@@ -1,27 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int matrix_alloc(int n){
-	int **matrix = (int **)malloc(n * sizeof(int*));
-	for(int i = 0; i < n; i++){
-		matrix[i] = (int *)malloc(n * sizeof(int));
+double ** matrix_alloc(int n){
+	int i,j;
+	double **matrix = (double **)malloc(n * sizeof(double*));
+	if(matrix==NULL){
+		free(matrix);
+		printf("Error");
+		return 0;
 	}
+	for(i = 0; i < n; i++){
+		matrix[i] = (double *)malloc(n * sizeof(double));
+		if(matrix[i]==NULL){
+			for(j=0;j<i; j++){
+				free(matrix[j]);
+				
+			}
+		return 0;
+		}
+	}
+	return matrix;
 }
-int matrix_free(double ** minor){
-	while(*minor++){
-		free(minor);	
+void matrix_free(double** minor, int n){
+	int i;
+	for (i=0; i<n; i++){
+		free(minor[i]);
 	}
 	free(minor);
 }
 
 double det(double ** matrix, int n)
 {
-	double** minor;
+	double ** minor;
 	double sum=0.0;
 	double sign=1.0;
-	int i;
+	int i,j,k;
 
-	/* rozpatrz przypadki szczególne */
 	if(n==1){
 		return matrix[0][0];
 	}
@@ -29,24 +43,46 @@ double det(double ** matrix, int n)
 		return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
 	}
 
-	minor=matrix_alloc(n-1);
+	minor = matrix_alloc(n-1);
 
-	for(i=0;i<n;i++)
-	{
-		/* skopiuj odp. podmacierz do minor */
-		...
-
-		/* wylicz wyznacznik podmiacierzy */
+	for(i=0;i<n;i++){
+		for(j=0; j<n-1; j++){
+			for(k=0; k<n-1;k++){
+				if(i>k){
+					minor[j][k]=matrix[j+1][k];
+				}else{
+					minor[j][k]=matrix[j+1][k+1];
+				}
+			}
+		}
 		sum+=sign*matrix[0][i]*det(minor,n-1);
-		sign = -sign;
-	};
-
-	matrix_free(minor);
-
+		sign=-sign;
+	}
+	matrix_free(minor, n-1);
 	return sum;
-}	
+}
 
 int main(){
-	
+	double ** minor;
+	FILE * pFile;
+	int n = 0, i,j;
+	pFile = fopen ("matrix.txt","rt");
+	if (pFile!=NULL)
+	{
+		fscanf(pFile, "%d", &n);
+		minor = matrix_alloc(n);
+		for(i=0;i<n;i++){
+			for(j=0;j<n;j++){
+				fscanf(pFile, "%lf", &minor[i][j]);
+			}
+		}
+	fclose (pFile);
+	printf("%f", det(minor, n));
+	matrix_free(minor, n);
+	}
+	else{
+		fclose (pFile);
+		printf("Nie mozna otworzyc pliku");
+	}
 	return 0;
 }
