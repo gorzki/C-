@@ -24,9 +24,10 @@ public:
 	void check (unsigned int i) const;
 	char read(unsigned int i) const;
 	void write(unsigned int i, char c);
+	bool isNumericChar(rcstring & ,unsigned int i);
 	int atoi();
 	rcstring& toLower();
-	rcstring Left(int n);
+	rcstring Left(unsigned int n);
 	char operator[](unsigned int i) const;
 	Cref operator[](unsigned int i);
 };
@@ -177,40 +178,60 @@ inline void rcstring::write(unsigned int i, char c)
   data = data->detach();
   data->s[i] = c;
 }
-bool isNumericChar(char x)
-{
-    return (x >= '0' && x <= '9')? false: true;
-}
-int rcstring::atoi(){
-    int res = 0;  
-    int sign = 1; 
-    int i = 0; 
-    if (data->s[0] == '-')
+  bool rcstring::isNumericChar(rcstring & x, unsigned int i)
+  {
+      return (x.data->s[i] >= '0' && x.data->s[i] <= '9')? true: false;
+	}
+  int rcstring::atoi()
+  {
+    if ((*this).data == NULL)
+       return 0;
+    int res = 0;
+    int sign = 1;
+    int i = 0;
+    while((*this).data->s[i] ==' ')
+      i++;
+    if ((*this).data->s[i] == '-')
     {
         sign = -1;
-        i++;  
+        i++;
     }
-    for (i = 1; *(data->s+i) != '\0'; i++)
+    else if((*this).data->s[i] =='+')
+      i++;
+    for (; (*this).data->s[i] != '\0'; ++i)
     {
-        if (isdigit(*(data->s+i)) == false)
-            return 0; 
-        res = res*10 + *(data->s+i);
+        if (isNumericChar((*this),i) == false)
+            break;
+        res = res*10 + (*this).data->s[i] - '0';
     }
-    return res*sign;
+    return sign*res;
 }
 
-rcstring & rcstring::toLower(){
-	unsigned int i;
-	for(i=0; *(data->s+i) != '\0'; i++){
-	  if (isupper(*(data->s+i))){
-			*(data->s)=*(data->s+i)+32;
-		}
+	rcstring & rcstring::toLower(){
+    unsigned int i=0;
+    char s=0;
+    while(i<data->size){
+        s = read(i);
+       if(!islower(s)) write (i, tolower (s));
+        i++;
+        }
+  		return *this;
+    }
+  rcstring rcstring::Left(unsigned int n)
+  {
+    if(n <data->size){
+      try
+      {
+        data->assign(n, data->s);
+      }
+      catch(string data)
+      {
+        throw data;
+        cout<<"wrong data!";
+      }
+    }
+    return *this;
 	}
-	return *this;
-}
-rcstring rcstring::Left(int n){
-  
-}
 char rcstring::operator[](unsigned int i) const
 {
   cout << "char rcstring::operator[](unsigned int i) const"<<endl;
