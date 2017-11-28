@@ -207,31 +207,34 @@ inline void rcstring::write(unsigned int i, char c)
     return sign*res;
 }
 
-	rcstring & rcstring::toLower(){
-    unsigned int i=0;
-    char s=0;
-    while(i<data->size){
-        s = read(i);
-       if(!islower(s)) write (i, tolower (s));
-        i++;
-        }
-  		return *this;
-    }
-  rcstring rcstring::Left(unsigned int n)
-  {
-    if(n <data->size){
-      try
-      {
-        data->assign(n, data->s);
+rcstring & rcstring::toLower(){
+  unsigned int i=0;
+  char s=0;
+  while(i<data->size){
+      s = read(i);
+     if(!islower(s)) write (i, tolower (s));
+      i++;
       }
-      catch(string data)
-      {
-        throw data;
-        cout<<"wrong data!";
-      }
+		return *this;
+ }
+
+rcstring rcstring::Left(unsigned int n)
+{
+	rcstring x (*this);
+  if(n < data->size){
+	
+    try
+    {
+      x.data->assign(n, data->s);
     }
-    return *this;
-	}
+    catch(...)
+    {
+      cout<<"wrong data!";
+			throw;
+    }
+  }
+  return x;
+}
 char rcstring::operator[](unsigned int i) const
 {
   cout << "char rcstring::operator[](unsigned int i) const"<<endl;
