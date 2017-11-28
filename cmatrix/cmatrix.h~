@@ -6,7 +6,5 @@
 #include <iostream>
 using namespace std;
 
-class CMatrix{
 
-};
 #endif
