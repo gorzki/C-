@@ -1,7 +1,7 @@
 cmatrix: cmatrix.o
 	g++ -g -Wall -pedantic $^ -o $@
 
-cmatrix.o: cmatrix.cpp cmatrix.h
+cmatrix.o: matrix.cpp cmatrix.h
 	g++ -g -c -Wall -pedantic $< -o $@
 
 .PHONY: clean
